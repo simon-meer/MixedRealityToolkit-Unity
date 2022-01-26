@@ -7,6 +7,9 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.TextCore;
+#if UNITY_VECTORGRAPHICS_PRESENT
+using Unity.VectorGraphics;
+#endif
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -49,19 +52,22 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
         [SerializeField]
         private Texture2D[] quadIcons = new Texture2D[0];
+
         [SerializeField]
         private Sprite[] spriteIcons = new Sprite[0];
+
         [SerializeField]
         private TMP_FontAsset charIconFont = null;
+
         [SerializeField, Tooltip("See TextMeshPro font assets for available unicode characters. Default characters are drawn from the HoloSymMDL2 font.")]
         private CharIcon[] charIcons = new CharIcon[]
         {
-            new CharIcon{ Character = ConvertCharStringToUInt32("\uEBD2"), Name = "AppBarAdjust" },
-            new CharIcon{ Character = ConvertCharStringToUInt32("\uE711"), Name = "AppBarClose" },
-            new CharIcon{ Character = ConvertCharStringToUInt32("\uE8FB"), Name = "AppBarDone" },
-            new CharIcon{ Character = ConvertCharStringToUInt32("\uE76C"), Name = "AppBarHide" },
-            new CharIcon{ Character = ConvertCharStringToUInt32("\uE712"), Name = "AppBarShow" },
-            new CharIcon{ Character = ConvertCharStringToUInt32("\uEB0F"), Name = "AppBarHome" },
+            new CharIcon { Character = ConvertCharStringToUInt32("\uEBD2"), Name = "AppBarAdjust" },
+            new CharIcon { Character = ConvertCharStringToUInt32("\uE711"), Name = "AppBarClose" },
+            new CharIcon { Character = ConvertCharStringToUInt32("\uE8FB"), Name = "AppBarDone" },
+            new CharIcon { Character = ConvertCharStringToUInt32("\uE76C"), Name = "AppBarHide" },
+            new CharIcon { Character = ConvertCharStringToUInt32("\uE712"), Name = "AppBarShow" },
+            new CharIcon { Character = ConvertCharStringToUInt32("\uEB0F"), Name = "AppBarHome" },
         };
 
         private Dictionary<string, uint> charIconLookup = new Dictionary<string, uint>();
@@ -105,7 +111,8 @@ namespace Microsoft.MixedReality.Toolkit.UI
             if (quadIconLookup.Count != quadIcons.Length ||
                 spriteIconLookup.Count != spriteIcons.Length ||
                 charIconLookup.Count != charIcons.Length)
-            {   // Our lookups are stale
+            {
+                // Our lookups are stale
                 EditorResetCharIconLookups();
             }
 #endif
@@ -140,7 +147,8 @@ namespace Microsoft.MixedReality.Toolkit.UI
                 foreach (CharIcon charIcon in charIcons)
                 {
                     if (string.IsNullOrEmpty(charIcon.Name))
-                    {   // Un-named icons are skipped without error.
+                    {
+                        // Un-named icons are skipped without error.
                         continue;
                     }
 
@@ -186,6 +194,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
                     i += 1;
                 }
             }
+
             return unicode;
         }
 
@@ -204,6 +213,11 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
         private Texture[] spriteIconTextures = null;
         private static Material fontRenderMat;
+
+#if UNITY_VECTORGRAPHICS_PRESENT
+        private static Material vectorMat;
+        private static Material gradientMat;
+#endif
 
         private const string missingPreviewImagesMessage = "Not all icon previews were loaded. Check the settings of the icons included in your iconset.";
         private const string noIconFontMessage = "No icon font selected. Icon fonts will be unavailable.";
@@ -272,13 +286,15 @@ namespace Microsoft.MixedReality.Toolkit.UI
                             EditorGUILayout.EndHorizontal();
                             EditorGUILayout.BeginHorizontal();
                         }
+
                         if (GUILayout.Button(" ",
-                            GUILayout.MinHeight(maxButtonSize),
-                            GUILayout.MaxHeight(maxButtonSize),
-                            GUILayout.MaxWidth(maxButtonSize)))
+                                GUILayout.MinHeight(maxButtonSize),
+                                GUILayout.MaxHeight(maxButtonSize),
+                                GUILayout.MaxWidth(maxButtonSize)))
                         {
                             newSelection = i;
                         }
+
                         Rect textureRect = GUILayoutUtility.GetLastRect();
                         EditorDrawTMPGlyph(textureRect, charIcons[i].Character, charIconFont);
                         column++;
@@ -349,7 +365,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
                 bool allPreviewsLoaded;
                 var gridContent = GenerateGridContent(spriteIconTextures, out allPreviewsLoaded);
 
-                if(!allPreviewsLoaded)
+                if (!allPreviewsLoaded)
                 {
                     EditorGUILayout.HelpBox(missingPreviewImagesMessage, MessageType.Warning);
                 }
@@ -414,7 +430,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
                 }
             }
 
-            if(currentSelection >= 0)
+            if (currentSelection >= 0)
             {
                 EditorGUILayout.BeginHorizontal();
 
@@ -513,7 +529,8 @@ namespace Microsoft.MixedReality.Toolkit.UI
                 float scale = Mathf.Min(glyphDrawPosition.width, glyphDrawPosition.height) / normalizedHeight * iconSizeMultiplier;
 
                 // Compute the normalized texture coordinates
-                Rect texCoords = new Rect((float)glyphOriginX / atlasTexture.width, (float)glyphOriginY / atlasTexture.height, (float)glyphWidth / atlasTexture.width, (float)glyphHeight / atlasTexture.height);
+                Rect texCoords = new Rect((float)glyphOriginX / atlasTexture.width, (float)glyphOriginY / atlasTexture.height,
+                    (float)glyphWidth / atlasTexture.width, (float)glyphHeight / atlasTexture.height);
 
                 if (Event.current.type == EventType.Repaint)
                 {
@@ -543,7 +560,8 @@ namespace Microsoft.MixedReality.Toolkit.UI
             foreach (Texture quadIcon in quadIcons)
             {
                 if (quadIcon == customQuadIcon)
-                {   // Already exists!
+                {
+                    // Already exists!
                     return false;
                 }
             }
@@ -718,13 +736,15 @@ namespace Microsoft.MixedReality.Toolkit.UI
                                         EditorGUILayout.EndHorizontal();
                                         EditorGUILayout.BeginHorizontal();
                                     }
+
                                     if (GUILayout.Button(" ",
-                                        GUILayout.MinHeight(maxButtonSize),
-                                        GUILayout.MaxHeight(maxButtonSize),
-                                        GUILayout.MaxWidth(maxButtonSize)))
+                                            GUILayout.MinHeight(maxButtonSize),
+                                            GUILayout.MaxHeight(maxButtonSize),
+                                            GUILayout.MaxWidth(maxButtonSize)))
                                     {
                                         addIndex = i;
                                     }
+
                                     Rect textureRect = GUILayoutUtility.GetLastRect();
                                     EditorDrawTMPGlyph(textureRect, fontAsset, fontAsset.characterTable[i]);
                                     column++;
@@ -771,6 +791,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
                                     }
                                 }
                             }
+
                             EditorGUILayout.Space();
                         }
 #if UNITY_2019_3_OR_NEWER
@@ -786,7 +807,9 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
                             if (charIconsProp.arraySize > 0)
                             {
-                                EditorGUILayout.HelpBox("These icons will appear in the button config helper inspector. Click an icon to remove it from this list.", MessageType.Info);
+                                EditorGUILayout.HelpBox(
+                                    "These icons will appear in the button config helper inspector. Click an icon to remove it from this list.",
+                                    MessageType.Info);
 
                                 using (new EditorGUILayout.VerticalScope())
                                 {
@@ -800,6 +823,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
                                             {
                                                 removeIndex = i;
                                             }
+
                                             Rect textureRect = GUILayoutUtility.GetLastRect();
                                             EditorDrawTMPGlyph(textureRect, bis.charIcons[i].Character, fontAsset);
                                             charIconNameprop.stringValue = EditorGUILayout.TextField(charIconNameprop.stringValue);
@@ -852,10 +876,22 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
         Texture2D GetTextureFromSprite(Sprite sprite)
         {
-            if (sprite == null || sprite.texture == null)
+            if (sprite == null)
             {
                 return null;
             }
+
+#if UNITY_VECTORGRAPHICS_PRESENT
+            if (sprite.texture == null)
+            {
+                return VectorUtils.RenderSpriteToTexture2D(sprite, 256, 256, GetSVGSpriteMaterial());
+            }
+#else
+            if (sprite.texture == null)
+            {
+                return null;
+            }
+#endif
 
             var rect = sprite.rect;
             var tex = new Texture2D((int)rect.width, (int)rect.height);
@@ -864,6 +900,21 @@ namespace Microsoft.MixedReality.Toolkit.UI
             tex.Apply(true);
             return tex;
         }
+
+#if UNITY_VECTORGRAPHICS_PRESENT
+
+        internal static Material GetSVGSpriteMaterial()
+        {
+            Material mat = null;
+            if (vectorMat == null)
+            {
+                string vectorMatPath = "Packages/com.unity.vectorgraphics/Runtime/Materials/Unlit_Vector.mat";
+                vectorMat = AssetDatabase.LoadMainAssetAtPath(vectorMatPath) as Material;
+            }
+
+            return vectorMat;
+        }
+#endif
 #endif
     }
 }

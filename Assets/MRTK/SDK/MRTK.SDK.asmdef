@@ -1,5 +1,6 @@
 {
     "name": "Microsoft.MixedReality.Toolkit.SDK",
+    "rootNamespace": "",
     "references": [
         "Microsoft.MixedReality.Toolkit",
         "Microsoft.MixedReality.Toolkit.Async",
@@ -8,7 +9,8 @@
         "Microsoft.MixedReality.Toolkit.Services.InputSimulation",
         "Microsoft.MixedReality.Toolkit.Services.InputSystem",
         "Microsoft.MixedReality.Toolkit.PlaneFinding",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.VectorGraphics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -22,6 +24,11 @@
             "name": "com.microsoft.mixedreality.toolkit.planefinding",
             "expression": "",
             "define": "PLANE_FINDING_PRESENT"
+        },
+        {
+            "name": "com.unity.vectorgraphics",
+            "expression": "",
+            "define": "UNITY_VECTORGRAPHICS_PRESENT"
         }
     ],
     "noEngineReferences": false
